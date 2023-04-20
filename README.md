@@ -1,4 +1,4 @@
-# Create an alpine container in interactive mode and install python
+Create an alpine container in interactive mode and install python
 ------------------------------------------------------
 
 * Launch an Ec2 instance.
@@ -21,7 +21,7 @@ docker info
 
 
 
-# Create an ubuntu container with sleep 1d and the login using exec. Install python.
+Create an ubuntu container with sleep 1d and the login using exec. Install python.
 -------------------------------------------------------
 
 * Launch an Ec2 instance.
@@ -43,7 +43,7 @@ docker info
 ![preview](Images/td4.png)
 
 
-# Create a postgress container with user panoramic and password trekking. Try logging in and show the  database
+Create a postgress container with user panoramic and password trekking. Try logging in and show the  database
 -----------------------------------------------------
 
 * Launch an Ec2 instance.
@@ -80,7 +80,7 @@ To see the data
 ![preview](Images/td8.png)
 
 
-# Creating docker file which runs on Php page on apache server
+Creating docker file which runs on Php page on apache server
 -------------------------------------------------------
 * Launch an Ec2 instance.
 * Install docker by using below steps.
@@ -120,7 +120,7 @@ CMD ["apache2ctl", "-D", "FOREGROUND"]
 ![preview](Images/td10.png)
 ![preview](Images/td9.png)
 
-# Docker file for jenkins
+Docker file for jenkins
 ------------------------
 
 * Launch an Ec2 instance.
@@ -164,7 +164,7 @@ enter ``cat /var/lib/jenkins/.jenkins/secrets/initialAdminPassword.`` It will di
 ![preview](Images/td12.png)
 ![preview](Images/td14.png)
 
-# Create mysql and nopcmmerce containers and try to make them work by configuring.
+Create mysql and nopcmmerce containers and try to make them work by configuring.
 ----------------------------------------------------------------------------------
 ```docker
 FROM mcr.microsoft.com/dotnet/sdk:7.0
