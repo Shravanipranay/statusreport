@@ -289,7 +289,328 @@ To create a container
  ``docker container run --name contaninerphp -d -p 30700:80 ngn:1.0``
  ![preview](Images/td22.png)
 
- Info.php getting error.....
+
+
+# TASK2
+
+Create multistage docker file for springpet clinic
+---------------------------------------------------
+
+* Launch an Ec2 instance.
+* Install docker by using below steps.
+  
+### steps
+```
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+sudo usermod -aG docker <username>
+#exit and relogin
+docker info
+```
+
+```docker
+FROM alpine/git AS vcs
+RUN cd / && git clone https://github.com/spring-projects/spring-petclinic.git && \
+    pwd && ls /spring-petclinic
+
+FROM maven:3-amazoncorretto-17 AS builder
+COPY --from=vcs /spring-petclinic /spring-petclinic
+RUN ls /spring-petclinic 
+RUN cd /spring-petclinic && mvn package
+
+FROM amazoncorretto:17-alpine-jdk
+WORKDIR /spc
+COPY --from=builder /spring-petclinic/target/spring-petclinic-*.jar /spc/spring-petclinic
+EXPOSE 8080
+CMD ["java" , "-jar" , "springpetclinic-*.jar"]
+```
+To create image 
+ ``docker build -t spc:1.0 .``
+ ![preview](images/sl2.png)
+ ![preview](images/sl4.png)
+To create a container 
+ ``docker container run --name contaniner1 -d -P spc:1.0``
+![preview](images/sl1.png)
+
+Create multistage docker file for nopcommerce
+----------------------------------------------
+* Launch an Ec2 instance.
+* Install docker by using below steps.
+  
+### steps
+```
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+sudo usermod -aG docker <username>
+#exit and relogin
+docker info
+```
+```docker
+FROM ubuntu:22.04 As builder
+RUN apt update && apt install unzip -y
+ADD https://github.com/nopSolutions/nopCommerce/releases/download/release-4.40.2/nopCommerce_4.40.2_NoSource_linux_x64.zip /nop/nopCommerce_4.40.2_NoSource_linux_x64.zip
+RUN cd nop && unzip nopCommerce_4.40.2_NoSource_linux_x64.zip && rm nopCommerce_4.40.2_NoSource_linux_x64.zip
+
+
+FROM mcr.microsoft.com/dotnet/sdk:7.0
+LABEL author="shravani" organization="qt" project="learning"
+COPY --from=builder /nop /nop-bin
+WORKDIR /nop-bin
+EXPOSE 5000
+CMD [ "dotnet", "Nop.Web.dll", "--urls", "http://0.0.0.0:5000" ]
+```
+To create image 
+ ``docker build -t nop:1.0 .``
+
+To create a container 
+ ``docker container run --name contaniner1 -d -P nop:1.0``
+ ![preview](images/sl5.png)
+
+Create multistage docker file for studentscourse register
+-------------------------------------------------
+
+
+* Launch an Ec2 instance.
+* Install docker by using below steps.
+  
+### steps
+```
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+sudo usermod -aG docker <username>
+#exit and relogin
+docker info
+```
+```docker
+FROM alpine/git AS vcs
+RUN cd / && git clone https://github.com/DevProjectsForDevOps/StudentCoursesRestAPI.git && \
+pwd && ls /StudentCoursesRestAPI
+FROM python:3.8.3-alpine As Builder
+LABEL author="shravani" organization="qt" project="learning"
+COPY --from=vcs /StudentCoursesRestAPI /StudentCoursesRestAPI
+ARG DIRECTORY=StudentCourses
+RUN cd / StudentCoursesRestAPI cp requirements.txt /StudentCourses
+ADD . ${DIRECTORY}
+EXPOSE 8080
+WORKDIR StudentCoursesRestAPI
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+ENTRYPOINT ["python", "app.py"]
+```
+![preview](images/sl21.png)
+![preview](images/sl20.png)
+
+Push the nopcommerce image to aws ECR
+-----------------------------------------
+* Launch an Ec2 instance.
+* Install docker by using below steps.
+  
+### steps
+```
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+sudo usermod -aG docker <username>
+#exit and relogin
+docker info
+```
+
+* Create an ECR Repository name(nopcommerce)
+* configure the awscli in the instance
+![preview](images/np1.png)
+  Use below commands to push the image into ECR:
+``aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/u8d0a2g1``
+``docker build -t nopcommerce .``
+``docker tag nopcommerce:latest public.ecr.aws/u8d0a2g1/nopcommerce:latest``
+``docker push public.ecr.aws/u8d0a2g1/nopcommerce:latest``
+![preview](images/np2.png)
+![preview](images/np3.png)
+
+
+Push the springpetclinic image to aws ECR
+-----------------------------------------
+* Launch an Ec2 instance.
+* Install docker by using below steps.
+  
+### steps
+```
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+sudo usermod -aG docker <username>
+#exit and relogin
+docker info
+```
+
+* Create an ECR Repository name(springpetclinic)
+* configure the awscli in the instance
+  Use below commands to push the image into ECR:
+
+``aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/u8d0a2g1``
+``docker build -t springpetclinic .``
+``docker tag springpetclinic:latest public.ecr.aws/u8d0a2g1/springpetclinic:latest``
+``docker push public.ecr.aws/u8d0a2g1/springpetclinic:latest``
+
+![preview](images/sl3.png)
+
+Push the studentregister image to aws ECR
+-----------------------------------------
+* Launch an Ec2 instance.
+* Install docker by using below steps.
+  
+### steps
+```
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+sudo usermod -aG docker <username>
+#exit and relogin
+docker info
+```
+
+* Create an ECR Repository name(student register)
+* configure the awscli in the instance
+![preview](images/sl22.png)
+  Use below commands to push the image into ECR:
+
+``aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/u8d0a2g1``
+``docker build -t studentregister .``
+``docker tag studentregister:latest public.ecr.aws/u8d0a2g1/studentregister:latest``
+``docker push public.ecr.aws/u8d0a2g1/studentregister:latest``
+![preview](images/sl23.png)
+![preview](images/sl24.png)
+
+
+
+Docker Compose for student register
+------------------------------------
+
+```yaml
+---
+version: "3.9"
+services:
+  studentcourse :
+    build :
+      context: .
+      dockerfile: Dockerfile
+    ports:
+         - "30000:8080"
+    image: scr 
+```
+To run the compose file ``docker compose up -d``
+![preview](images/sl26.png)
+![preview](images/sl25.png)
+![preview](images/sl20.png)
+
+
+Docker Compose for nopcommerce
+------------------------------
+```yaml
+---
+version: "3.9"
+services:
+  nop:
+   build:
+     context: .
+   ports:
+     - "35001:5000"
+   depends_on:
+     - nop_db
+  nop_db:
+    image: mysql:8
+    volumes:
+      - nop_db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=shravani@143
+      - MYSQL_DATABASE=employees
+      - MYSQL_USER=shravani
+      - MYSQL_PASSWORD=shravani@143
+    networks: 
+      - nop_bridge
+volumes:
+  nop_db:
+networks:
+  nop_bridge:
+```
+To run the compose file ``docker compose up -d``
+ ![preview](images/sl6.png)
+![preview](images/sl7.png)
+![preview](images/sl5.png)
+
+Docker compose file for spc
+---------------------------
+```yaml
+---
+version: "3.9"
+services:
+  springpet :
+    build :
+      context: .
+      dockerfile: Dockerfile
+    image: spc:3.0.0
+  springboot:
+    image: spc:3.0.0
+    container_name: springboot
+    networks:
+      - spring-net
+    volumes:
+      - spring-db:/var/lib/mysql
+    ports:
+      - "8080:8080"
+volumes:
+   spring-db:
+networks:
+   spring-net:
+```
+To run the compose file ``docker compose up -d``
+![preview](images/sl1.png)
+
+
+Docker compose file for game-of-life
+------------------------------------
+```docker
+FROM alpine/git AS vcs
+RUN cd / && git clone https://github.com/wakaleo/game-of-life.git
+FROM maven:3-amazoncorretto-8 AS builder
+COPY --from=vcs /game-of-life /game-of-life
+RUN cd /game-of-life && mvn package
+FROM tomcat:9-jdk8
+LABEL author="khaja" organization="qt"
+COPY --from=builder /game-of-life/gameoflife-web/target/*.war /usr/local/tomcat/webapps/gameoflife.war
+EXPOSE 8080
+```
+
+```yaml
+---
+version: "3.9"
+services:
+  gameoflife:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "30000:8080"
+```
+
+To run the compose file ``docker compose up -d``
+![preview](images/np4.png)
+![preview](images/np5.png)
+![preview](images/np6.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
