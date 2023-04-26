@@ -544,7 +544,7 @@ services:
     build :
       context: .
       dockerfile: Dockerfile
-    image: spc:3.0.0
+    image: spc
   springboot:
     image: spc:3.0.0
     container_name: springboot
@@ -584,7 +584,6 @@ services:
   gameoflife:
     build:
       context: .
-      dockerfile: Dockerfile
     ports:
       - "30000:8080"
 ```
@@ -593,6 +592,64 @@ To run the compose file ``docker compose up -d``
 ![preview](images/np4.png)
 ![preview](images/np5.png)
 ![preview](images/np6.png)
+
+
+TASK 26-04-2023
+----------------
+
+Write a Pod Spec for Spring PetClinic and nopCommerce Applications and execute the kubectl commands:
+   kubectl get pods and describe pods
+-------------------------------------------------------
+
+
+Manifest.yaml for spring pet clinic.
+```yaml
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: spc
+spec:
+  containers:
+    - name: springpetclinic
+      image: lakshminarayana1849/springpetclinic 
+      ports:
+        - containerPort: 8080
+```
+Login to the master node and paste the manifest.yaml file in the master node. ``vi manifest.yaml``
+``kubectl apply -f manifest.yaml``
+``kebectl get po -o wide``
+``kebectl describe po``
+![preview](images/kb2%20-%20Copy.png)
+![preview](images/kb1.png)
+
+
+Manifest1.yaml for nop commerce.
+
+```yaml
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nop
+spec:
+  containers:
+    - name: nopcommerce
+      image:  raji07/rajeshwari-nopcommerce
+      ports:
+        - containerPort: 8080
+```
+
+Login to the master node and paste the manifest1.yaml file in the master node. ``vi manifest1.yaml``
+``kubectl apply -f manifest1.yaml``
+``kebectl get po -o wide``
+``kebectl describe po``
+
+![preview](images/kb3.png)
+![preview](images/kb4.png)
+
+
+
 
 
 
