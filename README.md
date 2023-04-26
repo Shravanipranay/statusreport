@@ -620,8 +620,8 @@ Login to the master node and paste the manifest.yaml file in the master node. ``
 ``kubectl apply -f manifest.yaml``
 ``kebectl get po -o wide``
 ``kebectl describe po``
-![preview](images/kb2%20-%20Copy.png)
-![preview](images/kb1.png)
+![preview](./Images/kb2%20-%20Copy.png)
+![preview](./Images/kb1.png)
 
 
 Manifest1.yaml for nop commerce.
@@ -645,8 +645,8 @@ Login to the master node and paste the manifest1.yaml file in the master node. `
 ``kebectl get po -o wide``
 ``kebectl describe po``
 
-![preview](images/kb3.png)
-![preview](images/kb4.png)
+![preview](./Images/kb3.png)
+![preview](./Images/kb4.png)
 
 
 
