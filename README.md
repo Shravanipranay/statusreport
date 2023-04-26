@@ -326,11 +326,11 @@ CMD ["java" , "-jar" , "springpetclinic-*.jar"]
 ```
 To create image 
  ``docker build -t spc:1.0 .``
- ![preview](images/sl2.png)
- ![preview](images/sl4.png)
+ ![preview](Images/sl2.png)
+ ![preview](Images/sl4.png)
 To create a container 
  ``docker container run --name contaniner1 -d -P spc:1.0``
-![preview](images/sl1.png)
+![preview](Images/sl1.png)
 
 Create multistage docker file for nopcommerce
 ----------------------------------------------
@@ -364,7 +364,7 @@ To create image
 
 To create a container 
  ``docker container run --name contaniner1 -d -P nop:1.0``
- ![preview](images/sl5.png)
+ ![preview](Images/sl5.png)
 
 Create multistage docker file for studentscourse register
 -------------------------------------------------
@@ -397,8 +397,8 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 ENTRYPOINT ["python", "app.py"]
 ```
-![preview](images/sl21.png)
-![preview](images/sl20.png)
+![preview](Images/sl21.png)
+![preview](Images/sl20.png)
 
 Push the nopcommerce image to aws ECR
 -----------------------------------------
@@ -416,14 +416,14 @@ docker info
 
 * Create an ECR Repository name(nopcommerce)
 * configure the awscli in the instance
-![preview](images/np1.png)
+![preview](Images/np1.png)
   Use below commands to push the image into ECR:
 ``aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/u8d0a2g1``
 ``docker build -t nopcommerce .``
 ``docker tag nopcommerce:latest public.ecr.aws/u8d0a2g1/nopcommerce:latest``
 ``docker push public.ecr.aws/u8d0a2g1/nopcommerce:latest``
-![preview](images/np2.png)
-![preview](images/np3.png)
+![preview](Images/np2.png)
+![preview](Images/np3.png)
 
 
 Push the springpetclinic image to aws ECR
@@ -449,7 +449,7 @@ docker info
 ``docker tag springpetclinic:latest public.ecr.aws/u8d0a2g1/springpetclinic:latest``
 ``docker push public.ecr.aws/u8d0a2g1/springpetclinic:latest``
 
-![preview](images/sl3.png)
+![preview](Images/sl3.png)
 
 Push the studentregister image to aws ECR
 -----------------------------------------
@@ -467,15 +467,15 @@ docker info
 
 * Create an ECR Repository name(student register)
 * configure the awscli in the instance
-![preview](images/sl22.png)
+![preview](Images/sl22.png)
   Use below commands to push the image into ECR:
 
 ``aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/u8d0a2g1``
 ``docker build -t studentregister .``
 ``docker tag studentregister:latest public.ecr.aws/u8d0a2g1/studentregister:latest``
 ``docker push public.ecr.aws/u8d0a2g1/studentregister:latest``
-![preview](images/sl23.png)
-![preview](images/sl24.png)
+![preview](Images/sl23.png)
+![preview](Images/sl24.png)
 
 
 
@@ -495,9 +495,9 @@ services:
     image: scr 
 ```
 To run the compose file ``docker compose up -d``
-![preview](images/sl26.png)
-![preview](images/sl25.png)
-![preview](images/sl20.png)
+![preview](Images/sl26.png)
+![preview](Images/sl25.png)
+![preview](Images/sl20.png)
 
 
 Docker Compose for nopcommerce
@@ -530,9 +530,9 @@ networks:
   nop_bridge:
 ```
 To run the compose file ``docker compose up -d``
- ![preview](images/sl6.png)
-![preview](images/sl7.png)
-![preview](images/sl5.png)
+ ![preview](Images/sl6.png)
+![preview](Images/sl7.png)
+![preview](Images/sl5.png)
 
 Docker compose file for spc
 ---------------------------
@@ -560,7 +560,7 @@ networks:
    spring-net:
 ```
 To run the compose file ``docker compose up -d``
-![preview](images/sl1.png)
+![preview](Images/sl1.png)
 
 
 Docker compose file for game-of-life
@@ -589,9 +589,9 @@ services:
 ```
 
 To run the compose file ``docker compose up -d``
-![preview](images/np4.png)
-![preview](images/np5.png)
-![preview](images/np6.png)
+![preview](./Images/np4.png)
+![preview](./Images/np5.png)
+![preview](./Images/np6.png)
 
 
 TASK 26-04-2023
