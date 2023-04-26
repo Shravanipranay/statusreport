@@ -725,3 +725,5 @@ Login to the master node and paste the manifest1.yaml file in the master node. `
 
 
 
+
+
