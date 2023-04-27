@@ -649,81 +649,109 @@ Login to the master node and paste the manifest1.yaml file in the master node. `
 ![preview](./Images/kb4.png)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+TASK:27-04-2023
+----------------
+ Explain Kubernetes architecture:
+
+* Kubernetes is an open-source platform that is widely used for container orchestration. It is designed to automate the deployment, scaling, and management of containerized applications. Kubernetes can be used to manage and run applications in a variety of environments, including public, private, and hybrid clouds.
+
+
+Kubernetes components can be divided into two categories:
+# Control Plane Components 
+  * kube-apiserver:The Kubernetes API Server exposes the Kubernetes API, which is used by clients to interact with the Kubernetes cluster. It is responsible for validating and processing API requests.
+    * etcd:etcd stores  the configuration data of the Kubernetes cluster in the form of key value pair.
+    * kube-scheduler:The kube-scheduler is responsible for scheduling the pods on the nodes in the Kubernetes cluster.
+    * kube-controller-manager:The kube-controller-manager runs controllers that are responsible for maintaining the desired state of the Kubernetes cluster.
+    * cloud-controller-manager:The cloud-controller-manager is responsible for managing the cloud provider-specific resources in the Kubernetes cluster. 
+# Worker Nodes Components.
+* Nodes:Nodes are the worker machines that run the containers. They are managed by the Kubernetes master components.
+* Pods:Pods are the smallest deployable units in the Kubernetes cluster. They contain one or more containers and are scheduled on nodes.
+* kubelet:The Kubelet is the primary node agent that communicates with the Kubernetes API server and ensures that the containers are running on the node as expected. It is responsible for starting, stopping, and monitoring the containers on the node.
+* kube-proxy:The kube-proxy is responsible for providing network connectivity to the pods running on the node. It does this by creating network rules that allow traffic to be forwarded to the pods.
+* Container Runtime:The Container Runtime is the software that runs the containers on the node. Kubernetes supports several container runtimes, including Docker, CRI-O, and containerd.
+
+
+
+# Installing minikube on Ubuntu:
+
+* Launch an Ec2 instance.
+* Install docker by using below steps.
+  
+### steps
+```
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+sudo usermod -aG docker <username>
+#exit and relogin
+docker info
+```
+
+Install minikube
+``curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64``
+``sudo install minikube-linux-amd64 /usr/local/bin/minikube``
+``minikube start``
+
+``Install kubectl sudo snap install kubectl --classic``
+
+``vi manifest.yaml``
+``kubectl get po -A``
+``minikube dashboard`` "ctrl+c"
+``alias kubectl="minikube kubectl --"``
+
+```Yaml
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: spc
+spec:
+  containers:
+    - name: springpetclinic
+      image: lakshminarayana1849/springpetclinic 
+      ports:
+        - containerPort: 8080
+```
+``kubectl apply -f manifest1.yaml``
+``kubectl get po``
+``kubectl describe po``
+
+ To deploy the application
+
+``kubectl create deployment spc-minikube --image=lakshminarayana1849/springpetclinic``
+``kubectl port-forward --address "0.0.0.0" service/spc-minikube 7080:8080``
+
+![preview](Images/mn3.png)
+![preview](Images/mn2.png)
+![preview](Images/mn4.png)
+![preview](Images/mn5.png)
+![preview](Images/mn1.png)
+
+# Installing kind on Ubuntu:
+
+* Launch an Ec2 instance.
+* Install docker by using below steps.
+  
+### steps
+```
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+sudo usermod -aG docker <username>
+#exit and relogin
+docker info
+```
+
+Install kind
+------------
+```
+curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.18.0/kind-linux-amd64
+chmod +x ./kind
+sudo mv ./kind /usr/local/bin/kind
+```
+Install kubectl and paste the yaml file.
+``vi manifest1.yaml``
+``kubectl apply -f manifest1.yaml``
+``kebectl get po -o wide``
+``kebectl describe po``
+
+![preview](Images/mn6.png)
+![preview](Images/mn7.png)
