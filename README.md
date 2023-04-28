@@ -653,6 +653,8 @@ TASK:27-04-2023
 ----------------
  Explain Kubernetes architecture:
 
+ ![preview](Images/mn8.png)
+
 * Kubernetes is an open-source platform that is widely used for container orchestration. It is designed to automate the deployment, scaling, and management of containerized applications. Kubernetes can be used to manage and run applications in a variety of environments, including public, private, and hybrid clouds.
 
 
@@ -746,6 +748,7 @@ Install kind
 curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.18.0/kind-linux-amd64
 chmod +x ./kind
 sudo mv ./kind /usr/local/bin/kind
+kind create cluster
 ```
 Install kubectl and paste the yaml file.
 ``vi manifest1.yaml``
@@ -755,3 +758,184 @@ Install kubectl and paste the yaml file.
 
 ![preview](Images/mn6.png)
 ![preview](Images/mn7.png)
+
+
+TASK:28-04-2023
+---------------
+
+## Kubernetes Installation
+### Install Docker on  ubuntu machines
+* curl -fsSL https://get.docker.com -o get-docker.sh
+* sh get-docker.sh
+* sudo usermod -aG docker ubuntu
+* exit
+* re-login
+>> This url used for refernce steps[RefereHere](https://github.com/Mirantis/cri-dockerd)
+# Run these commands as root user
+* ###Install GO###
+* sudo -i
+* wget https://storage.googleapis.com/golang/getgo/installer_linux
+* chmod +x ./installer_linux
+* ./installer_linux
+* source ~/.bash_profile
+* git clone https://github.com/Mirantis/cri-dockerd.git
+* cd cri-dockerd
+* mkdir bin
+* go build -o bin/cri-dockerd
+* mkdir -p /usr/local/bin
+* install -o root -g root -m 0755 bin/cri-dockerd /usr/local/bin/cri-dockerd
+* cp -a packaging/systemd/* /etc/systemd/system
+* sed -i -e 's,/usr/bin/cri-dockerd,/usr/local/bin/cri-dockerd,' /etc/systemd/system/cri-docker.service
+* systemctl daemon-reload
+* systemctl enable cri-docker.service
+* systemctl enable --now cri-docker.socket
+* cd ~
+* sudo apt-get update
+* sudo apt-get install -y apt-transport-https ca-certificates curl
+* sudo curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+* echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+* sudo apt-get update
+* sudo apt-get install -y kubelet kubeadm kubectl
+* sudo apt-mark hold kubelet kubeadm kubectl
+    ## these above steps all are used in Master , Node1, Node2
+   ### use these command only in master
+* kubeadm init --pod-network-cidr "10.244.0.0/16" --cri-socket "unix:///var/run/cri-dockerd.sock"
+* exit
+[RefereHere] (https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)
+* mkdir -p $HOME/.kube
+* sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+* sudo chown $(id -u):$(id -g) $HOME/.kube/config
+* kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+* kubectl get nodes
+
+### use these commands in Node1, Node2 ( as a root user)
+kubeadm join 172.31.36.73:6443 --token paqndf.xvzsuv4f7mctr3xs \
+       --cri-socket "unix:///var/run/cri-dockerd.sock" \
+        --discovery-token-ca-cert-hash sha256:b29c8db59af2357007431c22bc3c776a908618d7fb64cbafd533db70023f06de
+`above steps taken in master node successfully installation part`
+
+
+# Writing the Manifest File for Game of Life App.
+
+Manifest.yaml for game of life.
+```yaml
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gameoflife
+spec:
+  containers:
+    - name: gol
+      image: shravanipranay/shravani:latest
+      ports:
+        - containerPort: 8080
+```
+
+# Creating the Jobs and CronJobs
+
+```yaml
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: spc
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    metadata:
+      name: spc
+    spec:
+      template:
+        metadata:
+          name: spc
+        spec:
+          containers:
+            - name: spc
+              image: lakshminarayana1849/springpetclinic
+              ports:
+                - containerPort: 8080
+         restartPolicy: OnFailure
+```
+
+``Vi spc.yaml`` Paste the above yaml file.
+``kubectl apply -f spc.yaml``
+
+``kubectl get cronjobs.batch``
+``kubectl get cronjobs.batch -w`` To see the detail view.
+
+![preview](Images/dt7.png)
+![preview](Images/dt8.png)
+![preview](Images/dt9.png)
+
+```yaml
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: spc
+spec:
+  template:
+    metadata:
+      name: spc
+    spec:
+      containers:
+        - image: lakshminarayana1849/springpetclinic
+          command:
+            - sleep
+            - 10s
+      restartPolicy: Never
+```
+
+## Creating the ReplicaSet && Writing the LABELS and Selecting the LABELS using selector concept
+
+```yaml
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: spc
+  labels:
+    app: spc 
+spec:
+  minReadySeconds: 1
+  replicas: 5
+  selector:
+    matchLabels:
+      app: spc
+  template:
+    metadata:
+      name: spc
+      labels:
+        app: spc
+    spec:
+      containers:
+        - name: springpetclinic
+          image: lakshminarayana1849/springpetclinic
+          ports:
+            - containerPort: 8080
+          command:
+            - /bin/sh
+```
+``Vi rs-spc.yaml`` Paste the above yaml file.
+``kubectl apply -f rs-spc.yaml``
+``kubectl get po`` To display the pods
+``kubectl get rs`` To display the replicaset
+
+To see the labels ``kubectl get po --show-labels``
+
+To see the particular labels
+``kubectl get po --selector "app=spc" --show-labels``
+![preview](Images/dt3.png)
+![preview](Images/dt4.png)
+![preview](Images/dt5.png)
+![preview](Images/dt6.png)
+
+
+
+
+
+
+
+
+
