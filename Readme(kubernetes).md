@@ -228,3 +228,7 @@ This means that pod will be able to schedule onto given node.
 ``kubectl taint nodes ip-172-31-43-251 app=mysql:NoSchedule-``
 
 Create k8s cluster with version 1.25 and run any deployment(nginx/any) and then upgrade cluster to version 1.27
+
+
+
+
