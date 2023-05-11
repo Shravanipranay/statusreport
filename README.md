@@ -934,6 +934,159 @@ To see the particular labels
 
 
 
+# Task 09-03-2023
+
+Kubernetes (k8s) Today Activities for Practice
+----------------------------------------------
+ 
+Create a Kubernetes cluster using kubeadm
+Deploy any application using kubectl
+Backup Kubernetes I.e backup etcd
+List out all the pod’s running in kube system namespace
+Write down all the steps required to make Kubernetes highly available
+Do a rolling update and roll back
+Ensure usage of secret in MySQL and configmaps
+Create a nop commerce deployment with MySQL statefulset and nop deployment
+
+# Create a Kubernetes cluster using kubeadm
+
+
+### Install Docker on  ubuntu machines
+* curl -fsSL https://get.docker.com -o get-docker.sh
+* sh get-docker.sh
+* sudo usermod -aG docker ubuntu
+* exit
+* re-login
+This url used for refernce steps
+[RefereHere](https://github.com/Mirantis/cri-dockerd)
+# Run these commands as root user
+* ###Install GO###
+* sudo -i
+* wget https://storage.googleapis.com/golang/getgo/installer_linux
+* chmod +x ./installer_linux
+* ./installer_linux
+* source ~/.bash_profile
+* git clone https://github.com/Mirantis/cri-dockerd.git
+* cd cri-dockerd
+* mkdir bin
+* go build -o bin/cri-dockerd
+* mkdir -p /usr/local/bin
+* install -o root -g root -m 0755 bin/cri-dockerd /usr/local/bin/cri-dockerd
+* cp -a packaging/systemd/* /etc/systemd/system
+* sed -i -e 's,/usr/bin/cri-dockerd,/usr/local/bin/cri-dockerd,' /etc/systemd/system/cri-docker.service
+* systemctl daemon-reload
+* systemctl enable cri-docker.service
+* systemctl enable --now cri-docker.socket
+* cd ~
+* sudo apt-get update
+* sudo apt-get install -y apt-transport-https ca-certificates curl
+* sudo curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+* echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+* sudo apt-get update
+* sudo apt-get install -y kubelet kubeadm kubectl
+* sudo apt-mark hold kubelet kubeadm kubectl
+    ## these above steps all are used in Master , Node1, Node2
+   ### use these command only in master
+* kubeadm init --pod-network-cidr "10.244.0.0/16" --cri-socket "unix:///var/run/cri-dockerd.sock"
+* exit
+[RefereHere](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)
+* mkdir -p $HOME/.kube
+* sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+* sudo chown $(id -u):$(id -g) $HOME/.kube/config
+* kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+* kubectl get nodes
+
+### use these commands in Node1, Node2 ( as a root user)
+kubeadm join 172.31.36.73:6443 --token paqndf.xvzsuv4f7mctr3xs \
+       --cri-socket "unix:///var/run/cri-dockerd.sock" \
+        --discovery-token-ca-cert-hash sha256:b29c8db59af2357007431c22bc3c776a908618d7fb64cbafd533db70023f06de
+`above steps taken in master node successfully installation part`
+
+
+# Deploy any application using kubectl
+
+```yaml
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: jenkins
+  labels:
+    app: jenkins
+spec:
+  minReadySeconds: 1
+  replicas: 2
+  selector:
+    matchLabels:
+      app: jenkins
+  strategy:
+    maxSurge: 25%
+    maxUnavailable: 25%
+  template:
+    metadata:
+      name: jenkins
+      labels:
+        app: jenkins
+  spec:
+    containers:
+      - name: jenkins
+        image: jenkins/jenkins:lts:jdk.11
+        ports:
+          - containerPort: 8080
+```
+# Backup Kubernetes I.e backup etcd
+
+etcd stores  the configuration data of the Kubernetes cluster in the form of key value pair.
+
+# List out all the pod’s running in kube system namespace
+
+To list out all the namespaces ``kubectl get namespaces --show-labels``
+``kubectl get namespaces``
+
+Creating namespace ``kubctl create ns <name>``
+
+# Write down all the steps required to make Kubernetes highly available
+
+
+
+```yaml
+---
+apiVersion: v1
+kind: ConfigMap
+data:
+  MYSQL_ROOT_PASSWORD= shravani@143
+  MYSQL_DATABASE= employees
+  MYSQL_USER= shravani
+  MYSQL_PASSWORD= shravani@143
+metadata:
+  name: mysql
+
+```
+
+```yaml
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mysql
+spec:
+  containers:
+    - name: mysql
+      image: mysql:8
+      envFrom:
+        - configMapRef:
+            name: mysql_config
+            optional: false
+      ports:
+        - containerPort: 3306
+```
+
+
+
+
+
+
+
 
 
 
