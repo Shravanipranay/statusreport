@@ -111,7 +111,7 @@ spec:
       ports:
         - containerPort: 3306
 ```
-![preview](images/ks51.png)
+![preview](Images/ks51.png)
 
 # Affinity
 * First we need to se the label for the node:
@@ -171,7 +171,7 @@ spec:
    
 
 ```
-![preview](images/ks52.png)
+![preview]( Images/ks52.png)
 
 # Taints and tolerances
 ```yaml
