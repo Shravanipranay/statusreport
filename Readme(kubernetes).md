@@ -227,7 +227,7 @@ This means that pod will be able to schedule onto given node.
  
 ``kubectl taint nodes ip-172-31-43-251 app=mysql:NoSchedule-``
 
-Create k8s cluster with version 1.25 and run any deployment(nginx/any) and then upgrade cluster to version 1.27
+# Create k8s cluster with version 1.25 and run any deployment(nginx/any) and then upgrade cluster to version 1.27
 
 Install kuberbetes 1.25 version by using below commands:
 
@@ -282,6 +282,7 @@ sudo apt-mark hold kubelet kubeadm kubectl
        --cri-socket "unix:///var/run/cri-dockerd.sock"
         --discovery-token-ca-cert-hash sha256:b5510c59d3783393ea6e8e9254b9470e5c82ad07de55379ad6d69c36e2d2f2d5
 ![preview](Images/k1.png)
+
 ![preview](Images/k3.png)
 ![preview](Images/k5.png)
 ![preview](Images/k8.png)
@@ -341,11 +342,12 @@ spec:
           ports:
             - containerPort: 80
 ```
+* After installing the k8s I have created mysql pod in one node and nopcommerce pod in one node by using manifest files
 ``Kubectl apply -f nginx.yaml``
 ![preview](Images/k6.png)
 
 
-# Nodes are in 1.25.9 version. Let's upgrade to 1.26.0 version by following beloe steps
+* Nodes are in 1.25.9 version. Let's upgrade to 1.26.0 version by following beloe steps
 ```
 apt update
 apt-cache madison kubeadm
@@ -375,7 +377,7 @@ apt-mark hold kubelet kubectl
 
 Check the Version of the worker node From master machine
 ``Kubectl get nodes``
-### Upgrade kubeadm perform this on Worker Machine
+* Upgrade kubeadm perform this on Worker Machine
 
 ```
 apt-mark unhold kubeadm && \
@@ -383,22 +385,27 @@ apt-get update && apt-get install -y kubeadm=1.26.0-00 && \
 apt-mark hold kubeadm
 ```
 ![preview](Images/k16.png)
-### Drain the Worker Node (perform this on master Machine)
+* Drain the Worker Node (perform this on master Machine)
 
 ``kubectl drain ip-172-31-43-15 --ignore-daemonsets``
 ``kubectl drain ip-172-31-47-24 --ignore-daemonsets``
 ![preview](Images/k17.png)
-### Upgrade kubelet config on worker node (perform this on Worker Machine)
+* Upgrade kubelet config on worker node (perform this on Worker Machine)
+
+* Install the version which we want to upgrade
 ```
 kubeadm upgrade node
 apt-mark unhold kubelet kubectl && \
 apt-get update && apt-get install -y kubelet=1.26.0-00 kubectl=1.26.0-00 && \
 apt-mark hold kubelet kubectl
+```
+* Restart the kubelet
+```
 systemctl daemon-reload
 systemctl restart kubelet
 ```
 ![preview](Images/k18.png)
-### Uncordon the node (perform this on master Machine)
+* Uncordon the node (perform this on master Machine)
 
 ``kubectl uncordon ip-172-31-43-15 ``
 ``kubectl uncordon ip-172-31-47-24``
@@ -406,8 +413,10 @@ systemctl restart kubelet
 ![preview](Images/k19.png)
  # Version changed to 1.25.0 to 1.26.0
 
- ## Now version changes to 1.26.0 to 1.27.0 by following the above steps  
+ ## Now version changes to 1.26.0 to 1.27.0 by following the above steps
+ * Control plane is upgraded  1.27
 ![preview](Images/k20.png)
+* Worker nodes are upgraded to 1.27
 ![preview](Images/k21.png)
 
 
